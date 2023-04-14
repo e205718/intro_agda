@@ -47,6 +47,9 @@ unitPlus (suc n) = cong suc (unitPlus n)
 
 data ⊥ : Set where
 
+⊥Elim : {P : Set} → ⊥ → P
+⊥Elim ()
+
 record ⊤ : Set where
 
 record _∧_ (P Q : Set) : Set where
@@ -79,3 +82,43 @@ test3 p q = p ∨ q
 
 lemma2 : (P Q : Set) → P → P ∨ Q
 lemma2 p q = ∨Intro1
+
+
+data _⊃_ (P Q : Set) : Set where
+  ⊃Intro : (P → Q) → P ⊃ Q
+
+⊃Elim : (P Q : Set) → P ⊃ Q → P → Q
+⊃Elim P Q (⊃Intro x)  = x
+
+⊃Elim2 : {P Q : Set} → P ⊃ Q → P → Q
+⊃Elim2 (⊃Intro x) q  = x q
+
+⊃Elim3 : {P Q : Set} → P ⊃ Q → P → Q
+⊃Elim3 (⊃Intro x)  = x
+
+prop1 : (A B : Set) → (A ∧ B) ⊃ (A ∨ B)
+--prop1 A B = ⊃Intro (λ x → ∨Intro1 (_∧_.Elim1 x)) where
+prop1 A B = ⊃Intro where
+  p1 : (A B : Set) → A ∧ B
+  p1 A B = {!!}
+  
+  p2 : (A B : Set)  → A ∨ B
+  p2 A B = {!!} 
+  p2' : (A B : Set) → A → A ∨ B
+  p2' A B = ∨Intro1
+
+  p2'' : (A B : Set) → A → A ∨ B
+  p2'' = ?
+
+  
+  p3 : (A B : Set) → A → A
+  p3 A a = λ a → a
+  
+  p3' : (A B : Set) → A ∧ B → A
+  p3' A B = _∧_.Elim1
+  
+  p3'' : {A B : Set} → A ∧ B → A
+  p3'' = λ x → _∧_.Elim1 x
+  
+  p3''' : (A B : Set) → A ∧ B → A
+  p3''' = λ a b x → _∧_.Elim1 x --- C-c,C-e
