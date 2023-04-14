@@ -98,7 +98,7 @@ data _⊃_ (P Q : Set) : Set where
 
 prop1 : (A B : Set) → (A ∧ B) ⊃ (A ∨ B)
 --prop1 A B = ⊃Intro (λ x → ∨Intro1 (_∧_.Elim1 x)) where
-prop1 A B = ⊃Intro where
+prop1 A B = ⊃Intro (proof2 A B)  where
   p1 : (A B : Set) → A ∧ B
   p1 A B = {!!}
   
@@ -107,10 +107,6 @@ prop1 A B = ⊃Intro where
   p2' : (A B : Set) → A → A ∨ B
   p2' A B = ∨Intro1
 
-  p2'' : (A B : Set) → A → A ∨ B
-  p2'' = ?
-
-  
   p3 : (A B : Set) → A → A
   p3 A a = λ a → a
   
@@ -122,3 +118,15 @@ prop1 A B = ⊃Intro where
   
   p3''' : (A B : Set) → A ∧ B → A
   p3''' = λ a b x → _∧_.Elim1 x --- C-c,C-e
+
+  proof2 : (A B : Set) → A ∧ B → A ∨ B 
+  proof2 A B = λ x → ∨Intro1 (_∧_.Elim1 x)
+
+data all (P : Set) (Q : P → Set) : Set where
+  ∀Intro : ((a : P) → Q a) → all P Q 
+
+∀Elim : {P : Set } → {Q : P → Set} → all P Q → (a : P) → Q a 
+∀Elim (∀Intro f) a = f a 
+
+∀Elim' : {P : Set } → {Q : P → Set} → all P Q → (a : P) → Q a 
+∀Elim' = λ ∀Intro a → {!   !} ----------- fuck YOU !!
