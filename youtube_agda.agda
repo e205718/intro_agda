@@ -126,7 +126,24 @@ data all (P : Set) (Q : P → Set) : Set where
   ∀Intro : ((a : P) → Q a) → all P Q 
 
 ∀Elim : {P : Set } → {Q : P → Set} → all P Q → (a : P) → Q a 
-∀Elim (∀Intro f) a = f a 
+∀Elim (∀Intro f) a = f a  --C-c,C-n  e
 
-∀Elim' : {P : Set } → {Q : P → Set} → all P Q → (a : P) → Q a 
-∀Elim' = λ ∀Intro a → {!   !} ----------- fuck YOU !!
+record exist (P : Set)(Q : P → Set) : Set where
+  field
+    evidence : P
+    Elim : Q evidence
+
+∃Intro : {P : Set} {Q : P → Set} → (a : P) → Q a → exist P Q
+--∃Intro a = λ x → record {evidence = a ; Elim = x}
+∃Intro a p = record {evidence = a ; Elim = p}
+
+-- prop3 : ∃x (∀y (P x y)) → (∀y (∃x P (x y)))
+--まずはx y の２値だから使用する変数は２
+--P はA Bに作用して、Setを返す関数。Pを定義する
+--prop3 :  (A B : Set) → (P : A → (B → Set)) → exist A (all B (P A B)) →
+--         all B (exist A P (A B))
+--命題の通りに、記号を並べると以上のようになるが、これだとErrorが出て通らない。
+--おそらく、Pを定義したが、Pは関数定義なので、引数を値で受け取る必要がある？？
+--値の定義にラムダ式を使用している。
+  --なぜラムダ式を使わないといけないのかについて考える。x
+  
