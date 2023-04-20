@@ -103,7 +103,7 @@ prop1 A B = ⊃Intro (proof2 A B)  where
   p1 A B = {!!}
   
   p2 : (A B : Set)  → A ∨ B
-  p2 A B = {!!} 
+  p2 A B = {!   !}
   p2' : (A B : Set) → A → A ∨ B
   p2' A B = ∨Intro1
 
@@ -121,6 +121,7 @@ prop1 A B = ⊃Intro (proof2 A B)  where
 
   proof2 : (A B : Set) → A ∧ B → A ∨ B 
   proof2 A B = λ x → ∨Intro1 (_∧_.Elim1 x)
+
 
 data all (P : Set) (Q : P → Set) : Set where
   ∀Intro : ((a : P) → Q a) → all P Q 
@@ -145,5 +146,42 @@ record exist (P : Set)(Q : P → Set) : Set where
 --命題の通りに、記号を並べると以上のようになるが、これだとErrorが出て通らない。
 --おそらく、Pを定義したが、Pは関数定義なので、引数を値で受け取る必要がある？？
 --値の定義にラムダ式を使用している。
-  --なぜラムダ式を使わないといけないのかについて考える。x
+
+--C-c,C-eで確認すると、y:B x:Aとして代入されているから、値として扱うためにλ式を使用しているという解釈であっていそう。
+
   
+prop3 :  (A B : Set) → (P : A → (B → Set)) → 
+      exist A (λ x → all B (λ y → (P x y))) ⊃ all B (λ y → exist A (λ x → (P x y)))
+
+prop3 A B p = ⊃Intro (λ (pr : exist A (λ x → all B (λ y → (p x y)))) → ∀Intro (λ (b : B) 
+                  → record { evidence = exist.evidence pr ; Elim = ∀Elim (exist.Elim pr) b })) 
+
+--prop3 A B p = ⊃Intro ( λ (pr : exist A (λ (x : A)
+--          → all B ( λ (y : B) → p x y))) → ∀Intro (λ (b : B) →
+--                record { evidence = exist.evidence pr ; Elim = ∀Elim (exist.Elim pr) b }))
+ 
+
+¬ : Set → Set
+¬ p = p ⊃ ⊥
+
+--DNE ∶ (P : Set) → ¬ (¬ P) ⊃ ¬ P 
+postulate LEM : (P : Set) → (P ∨ ¬ P)
+DNE : (P : Set) → ¬ (¬ P) ⊃ P
+DNE p = ⊃Intro (λ x → ∨Elim (LEM p) (λ y → y) (λ z → ⊥Elim (⊃Elim2 x z)))
+
+--DNE p = ⊃Intro (λ x → ∨Elim (LEM p) (λ y → y) (λ z → ⊥Elim (⊃Elim x z)))
+{-
+data _⊃_ (P Q : Set) : Set where
+  ⊃Intro : (P → Q) → P ⊃ Q
+
+⊃Elim : (P Q : Set) → P ⊃ Q → P → Q
+⊃Elim P Q (⊃Intro x)  = x
+
+⊃Elim2 : {P Q : Set} → P ⊃ Q → P → Q
+⊃Elim2 (⊃Intro x) q  = x q
+
+⊃Elim3 : {P Q : Set} → P ⊃ Q → P → Q
+⊃Elim3 (⊃Intro x)  = x
+⊃Elim : {P Q : Set} → P ⊃ Q → P → Q
+⊃Elim (⊃Intro x) q = x q
+-}
